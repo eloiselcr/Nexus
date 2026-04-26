@@ -34,7 +34,7 @@
                             {% endif %}
                         </select>
                         <select name="space_id" class="quick-capture-select" required>
-                            <option value="global">🌐 Global</option>
+                            <option value="">🌐 Global (Aucun espace)</option>
                             {% if spaces %}
                                 <optgroup label="Espaces">
                                 {% for s in spaces %}
@@ -69,12 +69,22 @@
                 </div>
                 <nav class="sidebar-nav">
                     {% if spaces %}
+                    <ul class="nav-menu">
                         {% for s in spaces %}
-                        <a href="/space/{{ s.id }}" class="nav-item">
-                            <span class="tag-dot" style="background: {{ s.color }}"></span>
-                            {{ s.name }}
-                        </a>
+                            <li class="nav-item">
+                                <a href="/space/{{ s.id }}" class="nav-link" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="tag-dot" style="background: {{ s.color }}"></span>
+                                        <span>{{ s.name }}</span>
+                                    </div>
+                                    <div style="display: flex; gap: 4px; font-size: 10px; opacity: 0.5;">
+                                        <form method="POST" action="/space/{{ s.id }}/move_up" style="margin:0;"><button type="submit" style="background:none;border:none;cursor:pointer;color:var(--text-primary);padding:0;" title="Monter">▲</button></form>
+                                        <form method="POST" action="/space/{{ s.id }}/move_down" style="margin:0;"><button type="submit" style="background:none;border:none;cursor:pointer;color:var(--text-primary);padding:0;" title="Descendre">▼</button></form>
+                                    </div>
+                                </a>
+                            </li>
                         {% endfor %}
+                    </ul>
                     {% else %}
                         <div style="padding: 0 12px; font-size: 12px; color: var(--text-tertiary);">Aucun espace.</div>
                     {% endif %}
@@ -114,7 +124,7 @@
                 <div class="topbar-right">
                     <div class="search-box">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <input type="text" placeholder="Rechercher une entité, note...">
+                        <input type="text" id="global-search" placeholder="Filtrer la vue courante...">
                     </div>
                 </div>
             </div>

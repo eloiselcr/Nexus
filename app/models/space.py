@@ -1,4 +1,4 @@
-from peewee import CharField, TextField, DateTimeField
+from peewee import CharField, TextField, DateTimeField, IntegerField
 import datetime
 from app.models.base import BaseModel
 
@@ -11,7 +11,9 @@ class Space(BaseModel):
     name = CharField(unique=True, max_length=100)
     description = TextField(null=True)
     color = CharField(max_length=20, default='#10b981')
+    order_index = IntegerField(default=0)
     created_at = DateTimeField(default=datetime.datetime.now)
+    deleted_at = DateTimeField(null=True)
 
     class Meta:
         table_name = 'spaces'

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Graphe Global | NexusGraph{% endblock %}
+
+{% block breadcrumb %}
+    <span>Graphe Global</span>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+    <div>
+        <h1 class="page-title">Cartographie</h1>
+        <p class="page-subtitle" style="margin-bottom: 0;">Vue complète de la galaxie de données (Bientôt disponible en Phase 4).</p>
+    </div>
+</div>
+
+<div class="card" style="height: calc(100vh - 180px); display: flex; flex-direction: column; padding: 0;">
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: 16px; flex-direction: column; gap: 16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 48px; opacity: 0.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        <p>Le moteur du Graphe Global est en cours de construction.</p>
+    </div>
+</div>
+{% endblock %}

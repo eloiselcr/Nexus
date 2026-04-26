@@ -49,4 +49,37 @@ def create_app(config_class=Config) -> Flask:
         if not db.is_closed():
             db.close()
 
+    # Custom Jinja Filter for French Dates
+    @app.template_filter('format_datetime_fr')
+    def format_datetime_fr(value, format='datetime'):
+        if not value:
+            return ""
+            
+        import datetime
+        if isinstance(value, str):
+            try:
+                # SQLite fallback parsing
+                value = datetime.datetime.strptime(value.split('.')[0], "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                try:
+                    value = datetime.datetime.fromisoformat(value)
+                except:
+                    return value # return string if parsing fails
+                    
+        months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
+        days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+        
+        try:
+            day_name = days[value.weekday()]
+        except AttributeError:
+            return str(value)
+        month_name = months[value.month - 1]
+        
+        if format == 'date':
+            return f"{value.day} {month_name} {value.year}"
+        elif format == 'full':
+            return f"{day_name} {value.day} {month_name} {value.year}"
+        else: # datetime
+            return f"{value.day} {month_name} {value.year} à {value.strftime('%H:%M')}"
+            
     return app

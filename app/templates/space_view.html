@@ -3,7 +3,7 @@
 {% block title %}{{ space.name }} | NexusGraph{% endblock %}
 
 {% block breadcrumb %}
-    <span>Espaces</span>
+    <a href="{{ url_for('views.index') }}" style="color: var(--text-tertiary);">Espaces</a>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; margin: 0 4px;"><polyline points="9 18 15 12 9 6"></polyline></svg>
     <span style="color: {{ space.color }}">{{ space.name }}</span>
 {% endblock %}
@@ -25,21 +25,24 @@
             {% endfor %}
         </select>
         <button type="submit" style="padding: 8px 16px; background: var(--accent); color: white; border-radius: var(--radius-sm); font-weight: 600;">Nouvelle note</button>
+        <a href="/space/{{ space.id }}/edit" style="padding: 8px; background: var(--bg-hover); color: var(--text-secondary); border-radius: var(--radius-sm); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;" title="Paramètres de l'espace">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </a>
     </form>
 </div>
 
-<div style="display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 20px;">
+<div style="display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 20px;" id="kanban-board">
     {% if pages %}
         {% for cat_name, cat_pages in pages|groupby('category.name') %}
-        <div style="min-width: 300px; flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px;">
+        <div class="kanban-col" style="min-width: 300px; flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px;">
             <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 16px; display: flex; justify-content: space-between;">
-                <span>{{ cat_name }}</span>
+                <span>{{ cat_pages|list|first|attr('category')|attr('icon') }} {{ cat_name }}</span>
                 <span class="badge" style="background: var(--bg-hover);">{{ cat_pages|list|length }}</span>
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 {% for page in cat_pages %}
-                <a href="/page/{{ page.id }}" style="display: block; padding: 12px; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); transition: border-color var(--transition);">
+                <a href="/page/{{ page.id }}" class="kanban-card" data-title="{{ page.title|lower }}" style="display: block; padding: 12px; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); transition: border-color var(--transition);">
                     <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 8px;">{{ page.title }}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-tertiary);">
                         <span>Créé le {{ page.created_at.strftime('%d/%m') }}</span>
@@ -56,4 +59,23 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Filtrage dynamique pour le Kanban
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.kanban-card').forEach(card => {
+                if (card.dataset.title.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+</script>
 {% endblock %}

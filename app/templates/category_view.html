@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Global: {{ category.name }} | NexusGraph{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ url_for('views.index') }}" style="color: var(--text-tertiary);">Référentiel Global</a>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; margin: 0 4px;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    <span>{{ category.icon }} {{ category.name }}</span>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+            <span style="font-size: 24px;">{{ category.icon }}</span>
+            <h1 class="page-title" style="margin-bottom: 0;">{{ category.name }} (Global)</h1>
+        </div>
+        <p class="page-subtitle" style="margin-bottom: 0;">Toutes les entités "{{ category.name }}" de l'entreprise, accessibles depuis n'importe quel espace.</p>
+    </div>
+    
+    <!-- Quick Capture local pour le Global -->
+    <form action="/page/quick_capture" method="POST" style="display: flex; gap: 8px;">
+        <input type="hidden" name="space_id" value="">
+        <input type="hidden" name="category_id" value="{{ category.id }}">
+        <input type="text" name="title" class="quick-capture-input" placeholder="Ajouter une entrée..." required autocomplete="off" style="margin-bottom: 0; background: var(--bg-surface);">
+        <button type="submit" style="padding: 8px 16px; background: var(--accent); color: white; border-radius: var(--radius-sm); font-weight: 600;">+</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Annuaire / Base de données</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% if pages %}
+            {% for page in pages %}
+            <a href="/page/{{ page.id }}" class="kanban-card" data-title="{{ page.title|lower }}" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-hover); border-radius: var(--radius-sm); color: var(--text-primary);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 13.5px;">{{ page.title }}</div>
+                    </div>
+                </div>
+                <div style="font-size: 11px; color: var(--text-tertiary); display: flex; gap: 12px;">
+                    <span>Créé le {{ page.created_at.strftime('%d/%m') }}</span>
+                    <span>Modifié le {{ page.updated_at.strftime('%d/%m') }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; color: var(--text-tertiary); padding: 20px;">
+                Aucune donnée dans le référentiel Global pour cette catégorie.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.kanban-card').forEach(card => {
+                if (card.dataset.title.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

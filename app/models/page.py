@@ -16,10 +16,10 @@ class Page(BaseModel):
     
     # Relations
     category = ForeignKeyField(Category, backref='pages', on_delete='RESTRICT')
-    space = ForeignKeyField(Space, backref='pages', null=True, on_delete='SET NULL') # Null = Global
-    
+    space = ForeignKeyField(Space, backref='pages', null=True, on_delete='CASCADE')
     created_at = DateTimeField(default=datetime.datetime.now)
     updated_at = DateTimeField(default=datetime.datetime.now)
+    deleted_at = DateTimeField(null=True)
 
     class Meta:
         table_name = 'pages'
