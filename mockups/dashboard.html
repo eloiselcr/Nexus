@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusGraph — Dashboard</title>
+  <link rel="stylesheet" href="css/nexus.css">
+</head>
+<body>
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">N</div>
+      <div class="sidebar-title">NexusGraph</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="editor.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Éditeur
+      </a>
+      <div class="nav-section-label">Exploration</div>
+      <a href="graph.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="15.5" y1="7.5" x2="8.5" y2="16.5"/></svg>
+        Graph
+      </a>
+      <a href="entity.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Entités
+      </a>
+      <div class="nav-section-label">Système</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Paramètres
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Changer de thème">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="breadcrumb">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Dashboard</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Rechercher une entité, note...">
+        </div>
+      </div>
+    </header>
+
+    <section class="page-content">
+      <!-- Greeting -->
+      <div class="fade-in">
+        <h1 class="page-title">Bonjour, Éloïse 👋</h1>
+        <p class="page-subtitle">Voici un aperçu de ton espace de travail — Mercredi 23 avril 2026</p>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row fade-in fade-in-1">
+        <div class="stat-card">
+          <div class="stat-label">Projets actifs</div>
+          <div class="stat-value" style="color:var(--accent)">4</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Entités</div>
+          <div class="stat-value">37</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Notes</div>
+          <div class="stat-value">128</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Échéances à 15j</div>
+          <div class="stat-value" style="color:var(--warning)">6</div>
+        </div>
+      </div>
+
+      <div class="grid-2 fade-in fade-in-2">
+        <!-- Priority Actions -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🎯 Actions prioritaires</div>
+            <button class="btn btn-ghost btn-sm">Voir tout</button>
+          </div>
+          <div class="priority-item">
+            <div class="priority-dot" style="background:var(--danger)"></div>
+            <div class="priority-content">
+              <div class="priority-title">Livrer le cahier des charges Migration SI</div>
+              <div class="priority-meta">
+                <span>Migration SI v2.0</span>
+                <span>@Adil Bensaid</span>
+              </div>
+            </div>
+            <div class="priority-date" style="background:var(--danger-bg);color:var(--danger)">25/04/2026</div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-dot" style="background:var(--warning)"></div>
+            <div class="priority-content">
+              <div class="priority-title">Valider les maquettes du portail intranet</div>
+              <div class="priority-meta">
+                <span>Refonte Intranet</span>
+                <span>@Marie Lefèvre</span>
+              </div>
+            </div>
+            <div class="priority-date" style="background:var(--warning-bg);color:var(--warning)">28/04/2026</div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-dot" style="background:var(--warning)"></div>
+            <div class="priority-content">
+              <div class="priority-title">Réunion de cadrage sécurité avec la DSI</div>
+              <div class="priority-meta">
+                <span>Audit Conformité RGPD</span>
+                <span>@Lucas Martin</span>
+              </div>
+            </div>
+            <div class="priority-date" style="background:var(--warning-bg);color:var(--warning)">30/04/2026</div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-dot" style="background:var(--success)"></div>
+            <div class="priority-content">
+              <div class="priority-title">Envoyer le rapport d'avancement trimestriel</div>
+              <div class="priority-meta">
+                <span>Direction Générale</span>
+                <span>@Sophie Chen</span>
+              </div>
+            </div>
+            <div class="priority-date" style="background:var(--success-bg);color:var(--success)">05/05/2026</div>
+          </div>
+        </div>
+
+        <!-- Project Health -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">💊 Santé des projets</div>
+          </div>
+          <div class="health-item">
+            <div class="health-left">
+              <div class="priority-dot" style="background:var(--danger)"></div>
+              <span class="health-name">Migration SI v2.0</span>
+            </div>
+            <div class="health-bar"><div class="health-bar-fill" style="width:35%;background:var(--danger)"></div></div>
+            <span class="badge badge-danger">En retard</span>
+          </div>
+          <div class="health-item">
+            <div class="health-left">
+              <div class="priority-dot" style="background:var(--warning)"></div>
+              <span class="health-name">Refonte Portail Intranet</span>
+            </div>
+            <div class="health-bar"><div class="health-bar-fill" style="width:62%;background:var(--warning)"></div></div>
+            <span class="badge badge-warning">À surveiller</span>
+          </div>
+          <div class="health-item">
+            <div class="health-left">
+              <div class="priority-dot" style="background:var(--success)"></div>
+              <span class="health-name">Audit Conformité RGPD</span>
+            </div>
+            <div class="health-bar"><div class="health-bar-fill" style="width:88%;background:var(--success)"></div></div>
+            <span class="badge badge-success">En bonne voie</span>
+          </div>
+          <div class="health-item">
+            <div class="health-left">
+              <div class="priority-dot" style="background:var(--success)"></div>
+              <span class="health-name">Déploiement Poste Agent</span>
+            </div>
+            <div class="health-bar"><div class="health-bar-fill" style="width:95%;background:var(--success)"></div></div>
+            <span class="badge badge-success">Quasi terminé</span>
+          </div>
+
+          <!-- Recent Activity -->
+          <div style="margin-top:28px">
+            <div class="card-title mb-8">📋 Activité récente</div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:var(--accent)"></div>
+                <div class="timeline-date">Aujourd'hui, 14:32</div>
+                <div class="timeline-text">Note créée : <a href="#">CR Réunion DSI - Migration</a></div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:var(--success)"></div>
+                <div class="timeline-date">Aujourd'hui, 10:15</div>
+                <div class="timeline-text">Entité liée : <strong>Thomas Durand</strong> → Bureau RH</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:var(--info)"></div>
+                <div class="timeline-date">Hier, 17:42</div>
+                <div class="timeline-text">Note modifiée : <a href="#">Procédure budgétaire 2026</a></div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot" style="background:var(--warning)"></div>
+                <div class="timeline-date">Hier, 09:20</div>
+                <div class="timeline-text">Tag ajouté : <span class="tag" style="font-size:10px;padding:2px 6px"><span class="tag-dot" style="background:var(--warning)"></span>Urgent</span> sur Migration SI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.icon-sun').style.display = isDark ? 'block' : 'none';
+  document.querySelector('.icon-moon').style.display = isDark ? 'none' : 'block';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+// Restore theme
+if (localStorage.getItem('theme') === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.icon-sun').style.display = 'none';
+    document.querySelector('.icon-moon').style.display = 'block';
+  });
+}
+</script>
+</body>
+</html>

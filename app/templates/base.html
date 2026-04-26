@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NexusGraph{% endblock %}</title>
+    
+    <!-- CSS vendored -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nexus.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">N</div>
+                <div class="sidebar-title">NexusGraph</div>
+            </div>
+            
+            <!-- V2: Quick Capture -->
+            <div class="quick-capture">
+                <form action="/page/quick_capture" method="POST">
+                    <input type="text" name="title" class="quick-capture-input" placeholder="Nouvelle note rapide..." required autocomplete="off">
+                    <div class="quick-capture-controls" style="flex-wrap: wrap;">
+                        <select name="category_id" class="quick-capture-select" required>
+                            <option value="" disabled selected>Catégorie...</option>
+                            {% if categories %}
+                                {% for c in categories %}
+                                    <option value="{{ c.id }}">{{ c.icon }} {{ c.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        <select name="space_id" class="quick-capture-select" required>
+                            <option value="global">🌐 Global</option>
+                            {% if spaces %}
+                                <optgroup label="Espaces">
+                                {% for s in spaces %}
+                                    <option value="{{ s.id }}">📂 {{ s.name }}</option>
+                                {% endfor %}
+                                </optgroup>
+                            {% endif %}
+                        </select>
+                        <button type="submit" class="quick-capture-btn">+</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="sidebar-scroll">
+                <nav class="sidebar-nav">
+                    <a href="{{ url_for('views.index') }}" class="nav-item {% if request.endpoint == 'views.index' %}active{% endif %}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        Dashboard
+                    </a>
+                    <a href="/graph" class="nav-item {% if request.endpoint == 'views.graph' %}active{% endif %}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        Graphe Global
+                    </a>
+                </nav>
+
+                <!-- V2: Espaces -->
+                <div class="nav-section-label" style="display: flex; justify-content: space-between; align-items: center;">
+                    Espaces
+                    <a href="/space/new" title="Créer un espace" style="color: var(--text-tertiary); cursor: pointer;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </a>
+                </div>
+                <nav class="sidebar-nav">
+                    {% if spaces %}
+                        {% for s in spaces %}
+                        <a href="/space/{{ s.id }}" class="nav-item">
+                            <span class="tag-dot" style="background: {{ s.color }}"></span>
+                            {{ s.name }}
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <div style="padding: 0 12px; font-size: 12px; color: var(--text-tertiary);">Aucun espace.</div>
+                    {% endif %}
+                </nav>
+
+                <!-- V2: Global -->
+                <div class="nav-section-label">Global</div>
+                <nav class="sidebar-nav">
+                    {% if categories %}
+                        {% for c in categories %}
+                        <a href="/category/{{ c.id }}" class="nav-item">
+                            <span>{{ c.icon }}</span>
+                            {{ c.name }}
+                        </a>
+                        {% endfor %}
+                    {% endif %}
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="theme-btn" title="Changer de thème">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <div class="breadcrumb">
+                        {% block breadcrumb %}
+                        <span>Dashboard</span>
+                        {% endblock %}
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" placeholder="Rechercher une entité, note...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENU DE LA PAGE -->
+            <div class="page-content" id="app-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Thème
+        const themeBtn = document.getElementById('theme-btn');
+        const html = document.documentElement;
+        
+        // Load theme from localStorage
+        const savedTheme = localStorage.getItem('nexus-theme');
+        if (savedTheme) html.setAttribute('data-theme', savedTheme);
+
+        themeBtn.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('nexus-theme', newTheme);
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

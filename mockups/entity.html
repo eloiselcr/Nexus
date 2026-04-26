@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusGraph — Entité</title>
+  <link rel="stylesheet" href="css/nexus.css">
+  <script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">N</div>
+      <div class="sidebar-title">NexusGraph</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="editor.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Éditeur
+      </a>
+      <div class="nav-section-label">Exploration</div>
+      <a href="graph.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="15.5" y1="7.5" x2="8.5" y2="16.5"/></svg>
+        Graph
+      </a>
+      <a href="entity.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Entités
+      </a>
+      <div class="nav-section-label">Système</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Paramètres
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Changer de thème">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="breadcrumb">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Entités / Personnes / <span>Adil Bensaid</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Modifier
+        </button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--danger)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Supprimer
+        </button>
+      </div>
+    </header>
+
+    <section class="page-content">
+      <!-- Entity Header -->
+      <div class="entity-header fade-in">
+        <div class="entity-avatar" style="background:linear-gradient(135deg,#8b5cf6,#6366f1)">AB</div>
+        <div class="entity-info">
+          <div class="entity-name">Adil Bensaid</div>
+          <div class="entity-type-line">
+            <span class="badge badge-accent">
+              <span class="tag-dot" style="background:#8b5cf6"></span>
+              Personne
+            </span>
+            <span class="tag"><span class="tag-dot" style="background:var(--info)"></span>DSI</span>
+            <span class="tag"><span class="tag-dot" style="background:var(--danger)"></span>Urgent</span>
+            <span class="tag"><span class="tag-dot" style="background:var(--success)"></span>Référent technique</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="text-sm text-tertiary">Créé le 15/03/2026</div>
+          <div class="text-sm text-tertiary">Modifié le 23/04/2026</div>
+        </div>
+      </div>
+
+      <div class="entity-grid fade-in fade-in-1">
+        <!-- Properties -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 Propriétés</div>
+          </div>
+          <div class="props-list">
+            <div class="prop-row">
+              <span class="prop-key">Bureau</span>
+              <span class="prop-val"><a href="#">Service Informatique</a></span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">Direction</span>
+              <span class="prop-val"><a href="#">Direction Générale</a></span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">Rôle</span>
+              <span class="prop-val">Chef de projet technique</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">Téléphone</span>
+              <span class="prop-val">01 44 56 78 90</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">Bureau n°</span>
+              <span class="prop-val">B-312</span>
+            </div>
+            <div class="prop-row">
+              <span class="prop-key">Étage</span>
+              <span class="prop-val">3ème</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relations -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔗 Relations directes</div>
+            <span class="badge badge-accent">7</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Entité</th>
+                <th>Type</th>
+                <th>Relation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="#" class="font-semibold">Service Informatique</a></td>
+                <td><span class="badge" style="background:rgba(245,158,11,.12);color:#f59e0b;font-size:10px">Organisation</span></td>
+                <td class="text-secondary">appartient à</td>
+              </tr>
+              <tr>
+                <td><a href="#" class="font-semibold">Migration SI v2.0</a></td>
+                <td><span class="badge" style="background:rgba(16,185,129,.12);color:#10b981;font-size:10px">Projet</span></td>
+                <td class="text-secondary">travaille sur</td>
+              </tr>
+              <tr>
+                <td><a href="#" class="font-semibold">Marie Lefèvre</a></td>
+                <td><span class="badge" style="background:rgba(139,92,246,.12);color:#8b5cf6;font-size:10px">Personne</span></td>
+                <td class="text-secondary">collabore avec</td>
+              </tr>
+              <tr>
+                <td><a href="#" class="font-semibold">Archi. Java Legacy</a></td>
+                <td><span class="badge" style="background:rgba(236,72,153,.12);color:#ec4899;font-size:10px">Savoir</span></td>
+                <td class="text-secondary">expert de</td>
+              </tr>
+              <tr>
+                <td><a href="#" class="font-semibold">Doc SSO/LDAP</a></td>
+                <td><span class="badge" style="background:rgba(236,72,153,.12);color:#ec4899;font-size:10px">Savoir</span></td>
+                <td class="text-secondary">rédacteur</td>
+              </tr>
+              <tr>
+                <td><a href="#" class="font-semibold">Sophie Chen</a></td>
+                <td><span class="badge" style="background:rgba(139,92,246,.12);color:#8b5cf6;font-size:10px">Personne</span></td>
+                <td class="text-secondary">point de contact</td>
+              </tr>
+              <tr>
+                <td><a href="#" class="font-semibold">Nadia Amari</a></td>
+                <td><span class="badge" style="background:rgba(139,92,246,.12);color:#8b5cf6;font-size:10px">Personne</span></td>
+                <td class="text-secondary">supervisé par</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Notes mentioning this entity -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📝 Notes associées</div>
+            <span class="badge badge-accent">4</span>
+          </div>
+          <div class="note-list-item">
+            <div class="note-list-title">CR Réunion DSI — Migration SI</div>
+            <div class="note-list-excerpt">Adil Bensaid a présenté l'avancement du lot 2. La migration des bases Oracle vers PostgreSQL est en cours...</div>
+            <div class="note-list-date">23/04/2026 — Migration SI v2.0</div>
+          </div>
+          <div class="note-list-item">
+            <div class="note-list-title">Point hebdo Service Informatique</div>
+            <div class="note-list-excerpt">Validation des specs techniques pour le module d'authentification SSO. Adil confirme la faisabilité technique...</div>
+            <div class="note-list-date">18/04/2026 — Service Informatique</div>
+          </div>
+          <div class="note-list-item">
+            <div class="note-list-title">Architecture cible — Migration lot 2</div>
+            <div class="note-list-excerpt">Schéma proposé par Adil : passage de Oracle 11g vers PostgreSQL 15 avec migration incrémentale...</div>
+            <div class="note-list-date">10/04/2026 — Migration SI v2.0</div>
+          </div>
+          <div class="note-list-item">
+            <div class="note-list-title">Onboarding Adil — Prise de poste</div>
+            <div class="note-list-excerpt">Premier contact avec Adil Bensaid, nouveau chef de projet technique rattaché au Service Informatique...</div>
+            <div class="note-list-date">15/03/2026 — Service Informatique</div>
+          </div>
+        </div>
+
+        <!-- Mini graph -->
+        <div class="card" style="min-height:320px;padding:0;overflow:hidden">
+          <div class="card-header" style="padding:16px 20px;margin-bottom:0;border-bottom:1px solid var(--border)">
+            <div class="card-title">🕸️ Voisinage</div>
+            <button class="btn btn-ghost btn-sm" onclick="window.location='graph.html'">Voir tout</button>
+          </div>
+          <div id="cy" style="width:100%;height:280px"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+// Theme
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.querySelector('.icon-sun').style.display=d?'block':'none';document.querySelector('.icon-moon').style.display=d?'none':'block';localStorage.setItem('theme',d?'light':'dark');initGraph()}
+if(localStorage.getItem('theme')==='dark'){document.documentElement.setAttribute('data-theme','dark');document.addEventListener('DOMContentLoaded',()=>{document.querySelector('.icon-sun').style.display='none';document.querySelector('.icon-moon').style.display='block'})}
+
+function initGraph(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  cytoscape({
+    container:document.getElementById('cy'),
+    elements:[
+      {data:{id:'adil',label:'Adil Bensaid',type:'Personne'}},
+      {data:{id:'si',label:'Service Info',type:'Organisation'}},
+      {data:{id:'mig',label:'Migration SI',type:'Projet'}},
+      {data:{id:'marie',label:'Marie Lefèvre',type:'Personne'}},
+      {data:{id:'sophie',label:'Sophie Chen',type:'Personne'}},
+      {data:{id:'nadia',label:'Nadia Amari',type:'Personne'}},
+      {data:{id:'archi',label:'Archi. Java',type:'Savoir'}},
+      {data:{id:'sso',label:'Doc SSO',type:'Savoir'}},
+      {data:{source:'adil',target:'si'}},
+      {data:{source:'adil',target:'mig'}},
+      {data:{source:'adil',target:'marie'}},
+      {data:{source:'adil',target:'sophie'}},
+      {data:{source:'adil',target:'nadia'}},
+      {data:{source:'adil',target:'archi'}},
+      {data:{source:'adil',target:'sso'}},
+    ],
+    style:[
+      {selector:'node',style:{'label':'data(label)','text-valign':'bottom','text-margin-y':8,'font-size':10,'font-family':'Inter,sans-serif','color':isDark?'#8b92a8':'#6b7280','width':32,'height':32,'border-width':2}},
+      {selector:'node[id="adil"]',style:{'background-color':'#6366f1','border-color':'#818cf8','width':42,'height':42,'font-weight':600,'color':isDark?'#e2e8f0':'#111827'}},
+      {selector:'node[type="Personne"]',style:{'background-color':'#8b5cf6','border-color':'#a78bfa'}},
+      {selector:'node[type="Projet"]',style:{'background-color':'#10b981','border-color':'#34d399'}},
+      {selector:'node[type="Organisation"]',style:{'background-color':'#f59e0b','border-color':'#fbbf24'}},
+      {selector:'node[type="Savoir"]',style:{'background-color':'#ec4899','border-color':'#f472b6'}},
+      {selector:'edge',style:{'width':1.5,'line-color':isDark?'#2a2a3c':'#e5e7eb','curve-style':'bezier','opacity':.5}},
+    ],
+    layout:{name:'cose',padding:20,nodeRepulsion:3000,idealEdgeLength:60,animate:true,animationDuration:500},
+    userZoomingEnabled:false,userPanningEnabled:true,
+  });
+}
+document.addEventListener('DOMContentLoaded',initGraph);
+</script>
+</body>
+</html>

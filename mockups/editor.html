@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusGraph — Éditeur</title>
+  <link rel="stylesheet" href="css/nexus.css">
+  <script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">N</div>
+      <div class="sidebar-title">NexusGraph</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <a href="dashboard.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="editor.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Éditeur
+      </a>
+      <div class="nav-section-label">Exploration</div>
+      <a href="graph.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="15.5" y1="7.5" x2="8.5" y2="16.5"/></svg>
+        Graph
+      </a>
+      <a href="entity.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Entités
+      </a>
+      <div class="nav-section-label">Système</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Paramètres
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Changer de thème">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="breadcrumb">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Notes / <span>CR Réunion DSI — Migration SI</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="text-sm text-tertiary">Modifié il y a 5 min</span>
+        <button class="btn btn-secondary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Sauvegarder
+        </button>
+        <button class="btn-icon" onclick="toggleGraph()" title="Afficher/masquer le graphe">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="editor-layout">
+      <!-- Editor Panel -->
+      <div class="editor-panel">
+        <div class="editor-toolbar">
+          <button class="toolbar-btn" title="Gras"><strong>B</strong></button>
+          <button class="toolbar-btn" title="Italique"><em>I</em></button>
+          <button class="toolbar-btn" title="Souligné"><u>U</u></button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn" title="Titre">H₁</button>
+          <button class="toolbar-btn" title="Sous-titre">H₂</button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn" title="Liste">☰</button>
+          <button class="toolbar-btn" title="Liste numérotée">1.</button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn active" title="Mentionner une entité" style="font-size:15px">@</button>
+          <button class="toolbar-btn" title="Ajouter une date" style="font-size:12px">📅</button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn" title="Lien">🔗</button>
+        </div>
+
+        <input class="editor-title-input" type="text" value="CR Réunion DSI — Migration SI" placeholder="Titre de la note...">
+
+        <div class="editor-body">
+          <p><strong>Date :</strong> 23/04/2026 — 14:00</p>
+          <p><strong>Participants :</strong> <span class="mention">@Adil Bensaid</span>, <span class="mention">@Marie Lefèvre</span>, <span class="mention">@Lucas Martin</span></p>
+          <p><strong>Projet :</strong> <span class="mention">@Migration SI v2.0</span></p>
+
+          <p style="margin-top:20px"><strong>1. État d'avancement</strong></p>
+          <p><span class="mention">@Adil Bensaid</span> a présenté l'avancement du lot 2. La migration des bases Oracle vers PostgreSQL est en cours. Le <span class="mention">@Service Informatique</span> confirme que l'infrastructure est prête pour les tests de charge.</p>
+
+          <p><strong>2. Points de blocage</strong></p>
+          <p>Le module d'authentification SSO dépend d'une validation de la <span class="mention">@Direction des Finances</span> pour le budget licences. <span class="mention">@Sophie Chen</span> doit remonter l'arbitrage avant le <strong>30/04/2026</strong>.</p>
+
+          <p><strong>3. Prochaines étapes</strong></p>
+          <ul style="list-style:disc;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+            <li>Livrer le cahier des charges final → <strong>25/04/2026</strong></li>
+            <li>Tests de charge sur environnement de pré-production → <strong>02/05/2026</strong></li>
+            <li>Réunion de validation avec <span class="mention">@Thomas Durand</span> (DRH) → <strong>05/05/2026</strong></li>
+          </ul>
+
+          <p style="margin-top:16px"><strong>4. Notes personnelles</strong></p>
+          <p>Voir le <span class="mention">@Protocole d'achat public</span> pour les contraintes de marchés publics liées au changement de licence. Penser à consulter le <span class="mention">@Bureau des Ressources Humaines</span> pour les impacts sur la formation des agents.</p>
+        </div>
+      </div>
+
+      <!-- Graph Panel -->
+      <div class="graph-panel" id="graphPanel">
+        <div class="graph-header">
+          <span class="graph-header-title">Graphe contextuel</span>
+          <div class="flex gap-8">
+            <button class="btn btn-ghost btn-sm">Ouvrir en grand</button>
+          </div>
+        </div>
+        <div class="graph-canvas" id="cy"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Theme
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.querySelector('.icon-sun').style.display=d?'block':'none';document.querySelector('.icon-moon').style.display=d?'none':'block';localStorage.setItem('theme',d?'light':'dark');initGraph()}
+if(localStorage.getItem('theme')==='dark'){document.documentElement.setAttribute('data-theme','dark');document.addEventListener('DOMContentLoaded',()=>{document.querySelector('.icon-sun').style.display='none';document.querySelector('.icon-moon').style.display='block'})}
+
+// Graph toggle
+function toggleGraph(){const p=document.getElementById('graphPanel');p.classList.toggle('hidden')}
+
+// Cytoscape contextual graph
+function initGraph(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const cy=cytoscape({
+    container:document.getElementById('cy'),
+    elements:[
+      {data:{id:'note',label:'CR Réunion DSI',type:'note'}},
+      {data:{id:'adil',label:'Adil Bensaid',type:'Personne'}},
+      {data:{id:'marie',label:'Marie Lefèvre',type:'Personne'}},
+      {data:{id:'lucas',label:'Lucas Martin',type:'Personne'}},
+      {data:{id:'sophie',label:'Sophie Chen',type:'Personne'}},
+      {data:{id:'thomas',label:'Thomas Durand',type:'Personne'}},
+      {data:{id:'migration',label:'Migration SI v2.0',type:'Projet'}},
+      {data:{id:'si',label:'Service Informatique',type:'Organisation'}},
+      {data:{id:'dfi',label:'Direction Finances',type:'Organisation'}},
+      {data:{id:'brh',label:'Bureau RH',type:'Organisation'}},
+      {data:{id:'proto',label:'Protocole achat',type:'Savoir'}},
+      {data:{source:'note',target:'adil'}},
+      {data:{source:'note',target:'marie'}},
+      {data:{source:'note',target:'lucas'}},
+      {data:{source:'note',target:'sophie'}},
+      {data:{source:'note',target:'thomas'}},
+      {data:{source:'note',target:'migration'}},
+      {data:{source:'note',target:'si'}},
+      {data:{source:'note',target:'dfi'}},
+      {data:{source:'note',target:'brh'}},
+      {data:{source:'note',target:'proto'}},
+      {data:{source:'adil',target:'si'}},
+      {data:{source:'thomas',target:'brh'}},
+      {data:{source:'adil',target:'migration'}},
+    ],
+    style:[
+      {selector:'node',style:{'label':'data(label)','text-valign':'bottom','text-margin-y':8,'font-size':11,'font-family':'Inter, sans-serif','color':isDark?'#94a3b8':'#6b7280','text-max-width':90,'text-wrap':'ellipsis','width':36,'height':36,'border-width':2}},
+      {selector:'node[type="note"]',style:{'background-color':'#6366f1','border-color':'#818cf8','color':isDark?'#e2e8f0':'#111827','font-weight':600,'width':44,'height':44}},
+      {selector:'node[type="Personne"]',style:{'background-color':'#8b5cf6','border-color':'#a78bfa'}},
+      {selector:'node[type="Projet"]',style:{'background-color':'#10b981','border-color':'#34d399'}},
+      {selector:'node[type="Organisation"]',style:{'background-color':'#f59e0b','border-color':'#fbbf24'}},
+      {selector:'node[type="Savoir"]',style:{'background-color':'#ec4899','border-color':'#f472b6'}},
+      {selector:'edge',style:{'width':1.5,'line-color':isDark?'#2a2a3c':'#e5e7eb','curve-style':'bezier','opacity':.6}},
+    ],
+    layout:{name:'cose',padding:30,nodeRepulsion:5000,idealEdgeLength:80,animate:true,animationDuration:600},
+    userZoomingEnabled:true,userPanningEnabled:true,
+  });
+}
+document.addEventListener('DOMContentLoaded',initGraph);
+</script>
+</body>
+</html>

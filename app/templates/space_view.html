@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ space.name }} | NexusGraph{% endblock %}
+
+{% block breadcrumb %}
+    <span>Espaces</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; margin: 0 4px;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    <span style="color: {{ space.color }}">{{ space.name }}</span>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+            <span class="tag-dot" style="background: {{ space.color }}; width: 12px; height: 12px;"></span>
+            <h1 class="page-title" style="margin-bottom: 0;">{{ space.name }}</h1>
+        </div>
+        <p class="page-subtitle" style="margin-bottom: 0;">{{ space.description or "Espace opérationnel." }}</p>
+    </div>
+    <form action="/space/{{ space.id }}/new_page" method="POST" style="display: flex; gap: 8px;">
+        <select name="category_id" class="quick-capture-select" required style="border-radius: var(--radius-sm); padding: 8px 12px;">
+            <option value="" disabled selected>Choisir une catégorie...</option>
+            {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.icon }} {{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" style="padding: 8px 16px; background: var(--accent); color: white; border-radius: var(--radius-sm); font-weight: 600;">Nouvelle note</button>
+    </form>
+</div>
+
+<div style="display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 20px;">
+    {% if pages %}
+        {% for cat_name, cat_pages in pages|groupby('category.name') %}
+        <div style="min-width: 300px; flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 16px; display: flex; justify-content: space-between;">
+                <span>{{ cat_name }}</span>
+                <span class="badge" style="background: var(--bg-hover);">{{ cat_pages|list|length }}</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                {% for page in cat_pages %}
+                <a href="/page/{{ page.id }}" style="display: block; padding: 12px; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); transition: border-color var(--transition);">
+                    <div style="font-weight: 600; font-size: 13.5px; margin-bottom: 8px;">{{ page.title }}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-tertiary);">
+                        <span>Créé le {{ page.created_at.strftime('%d/%m') }}</span>
+                        <span>Modifié le {{ page.updated_at.strftime('%d/%m') }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; color: var(--text-tertiary); padding: 40px; width: 100%;">
+            Cet espace est vide.<br>Créez votre première note via le menu en haut à droite.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

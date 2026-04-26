@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | NexusGraph{% endblock %}
+
+{% block extra_css %}
+<!-- Quill CSS offline -->
+<link href="{{ url_for('static', filename='css/quill.snow.css') }}" rel="stylesheet">
+<style>
+    /* Layout Dual-View pour la Page Universelle */
+    .dual-view {
+        display: flex;
+        height: calc(100vh - 180px); /* 100vh - topbar - header */
+        width: 100%;
+    }
+    .left-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 300px;
+        width: 50%; /* Default 50% */
+    }
+    .resizer {
+        width: 8px;
+        cursor: col-resize;
+        margin: 0 10px;
+        border-radius: 4px;
+        background-color: var(--border);
+        transition: background-color 0.2s;
+    }
+    .resizer:hover, .resizer:active {
+        background-color: var(--accent);
+    }
+    .right-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 300px;
+        flex: 1; /* Takes remaining space */
+    }
+    
+    /* Editeur Quill */
+    .editor-container {
+        flex: 1;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    #editor-wrapper {
+        flex: 1;
+        overflow-y: auto;
+    }
+    .ql-toolbar.ql-snow {
+        border: none;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-hover);
+        padding: 12px;
+    }
+    .ql-container.ql-snow {
+        border: none;
+        font-family: var(--font);
+        font-size: 14.5px;
+        color: var(--text-primary);
+    }
+    
+    /* Graphe contextuel */
+    .graph-panel {
+        flex: 1;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        position: relative;
+    }
+    #cy {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+    <span>
+        {% if page.space %}📂 {{ page.space.name }}{% else %}🌐 Global{% endif %}
+    </span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; margin: 0 4px;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    <span>{{ page.category.icon }} {{ page.category.name }}</span>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+    <div style="flex: 1;">
+        <input type="text" id="page-title" value="{{ page.title }}" style="font-size: 24px; font-weight: 700; width: 100%; border: none; background: transparent; color: var(--text-primary); outline: none;" placeholder="Titre de la page...">
+        <div class="page-subtitle" style="margin-bottom: 0;">Créé le {{ page.created_at.strftime('%d/%m/%Y') }} — <span id="last-updated">Modifié le {{ page.updated_at.strftime('%d/%m/%Y à %H:%M') }}</span></div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <span id="save-status" style="font-size: 12px; color: var(--text-tertiary); align-self: center; display: none;">Sauvegardé</span>
+        <button id="save-btn" style="padding: 8px 16px; background: var(--accent); color: white; border-radius: var(--radius-sm); font-weight: 600;">Enregistrer</button>
+    </div>
+</div>
+
+<div class="dual-view">
+    <!-- GAUCHE : Propriétés & Éditeur -->
+    <div class="left-panel">
+        
+        <!-- Zone Template (Propriétés) -->
+        <div class="card" style="padding: 16px;">
+            <div class="card-title" style="margin-bottom: 12px; font-size: 12px; color: var(--text-tertiary); text-transform: uppercase;">Propriétés ({{ page.category.name }})</div>
+            <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: center;">
+                <!-- TODO: Itérer sur les propriétés dynamiques -->
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Statut</div>
+                <input type="text" value="En cours" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-input); font-size: 13px;">
+            </div>
+        </div>
+
+        <!-- Zone Texte Libre (Quill) -->
+        <div class="editor-container">
+            <div id="editor-wrapper">
+                <div id="editor">
+                    {{ page.content|safe if page.content else '' }}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- DRAGGABLE SPLITTER -->
+    <div class="resizer" id="dragMe"></div>
+
+    <!-- DROITE : Graphe Contextuel -->
+    <div class="right-panel">
+        <div class="card" style="height: 100%; display: flex; flex-direction: column; padding: 0;">
+            <div class="card-header" style="padding: 16px 16px 0 16px;">
+                <h3 class="card-title">🕸️ Voisinage</h3>
+            </div>
+            <div class="graph-panel">
+                <div id="cy"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Librairies Offline -->
+<script src="{{ url_for('static', filename='js/quill.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cytoscape.min.js') }}"></script>
+
+<script>
+    // 1. Initialisation Quill
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Rédiger une note ou tapez @ pour lier une page...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'blockquote', 'code-block'],
+                ['clean']
+            ]
+        }
+    });
+
+    // 2. Sauvegarde de la page (Titre + Contenu)
+    document.getElementById('save-btn').addEventListener('click', async () => {
+        const title = document.getElementById('page-title').value;
+        const content = quill.getSemanticHTML(); // Récupère le HTML propre de Quill v2
+        
+        const saveBtn = document.getElementById('save-btn');
+        const statusText = document.getElementById('save-status');
+        
+        saveBtn.textContent = '...';
+        saveBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/page/{{ page.id }}', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                statusText.style.display = 'inline-block';
+                setTimeout(() => statusText.style.display = 'none', 3000);
+                
+                // Mettre à jour la date locale
+                const date = new Date(data.updated_at);
+                document.getElementById('last-updated').textContent = `Modifié le ${date.toLocaleDateString('fr-FR')} à ${date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}`;
+            } else {
+                alert("Erreur lors de la sauvegarde.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Erreur réseau.");
+        } finally {
+            saveBtn.textContent = 'Enregistrer';
+            saveBtn.disabled = false;
+        }
+    });
+
+    // 3. Resizer Logique
+    const resizer = document.getElementById('dragMe');
+    const leftPanel = document.querySelector('.left-panel');
+    const rightPanel = document.querySelector('.right-panel');
+    let isResizing = false;
+
+    resizer.addEventListener('mousedown', function(e) {
+        isResizing = true;
+        document.body.style.cursor = 'col-resize';
+        // Prevent selection while dragging
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isResizing) return;
+        // Calculate new width for left panel
+        const containerOffsetLeft = leftPanel.parentNode.getBoundingClientRect().left;
+        const pointerRelativeXpos = e.clientX - containerOffsetLeft;
+        
+        // Boundaries
+        const minWidth = 300;
+        const maxWidth = leftPanel.parentNode.clientWidth - minWidth;
+        const newWidth = Math.max(minWidth, Math.min(pointerRelativeXpos, maxWidth));
+        
+        leftPanel.style.width = newWidth + 'px';
+        leftPanel.style.flex = 'none';
+        // Trigger resize on cytoscape to fit new container
+        if (window.cyInstance) { window.cyInstance.resize(); }
+    });
+
+    document.addEventListener('mouseup', function(e) {
+        if (isResizing) {
+            isResizing = false;
+            document.body.style.cursor = '';
+        }
+    });
+
+    // 4. Initialisation Graphe Contextuel (Vide pour l'instant)
+    document.addEventListener("DOMContentLoaded", function() {
+        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+        const nodeColor = theme === 'dark' ? '#818cf8' : '#6366f1';
+        const labelColor = theme === 'dark' ? '#eef0f6' : '#111827';
+        const edgeColor = theme === 'dark' ? '#5b6178' : '#9ca3af';
+        const textBgColor = theme === 'dark' ? '#15151e' : '#ffffff';
+
+        window.cyInstance = cytoscape({
+            container: document.getElementById('cy'),
+            elements: [
+                // Uniquement le noeud courant
+                { data: { id: 'current', name: '{{ page.title }}' } }
+            ],
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'label': 'data(name)',
+                        'background-color': nodeColor,
+                        'color': labelColor,
+                        'font-size': '12px',
+                        'text-valign': 'bottom',
+                        'text-margin-y': '6px',
+                        'width': 30,
+                        'height': 30
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 2,
+                        'line-color': edgeColor,
+                        'target-arrow-color': edgeColor,
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        'label': 'data(label)',
+                        'font-size': '10px',
+                        'color': labelColor,
+                        'text-background-opacity': 1,
+                        'text-background-color': textBgColor,
+                    }
+                }
+            ],
+            layout: { name: 'cose', padding: 20 }
+        });
+    });
+</script>
+{% endblock %}

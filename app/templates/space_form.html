@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Nouvel Espace | NexusGraph{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ url_for('views.index') }}">Dashboard</a>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; margin: 0 4px;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    <span>Nouvel Espace</span>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1 class="page-title">Créer un nouvel Espace</h1>
+    <p class="page-subtitle">Un espace regroupe les notes et entités d'un Système d'Information (SI) ou d'un projet.</p>
+
+    <div class="card">
+        <form method="POST" style="display: flex; flex-direction: column; gap: 20px;">
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Nom de l'espace</label>
+                <input type="text" name="name" required placeholder="ex: Migration SI v2.0" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-input);">
+            </div>
+            
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Couleur</label>
+                <input type="color" name="color" value="#10b981" style="width: 100%; height: 40px; padding: 2px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-input);">
+            </div>
+            
+            <div>
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Description (optionnelle)</label>
+                <textarea name="description" rows="3" placeholder="Description du périmètre..." style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-input); resize: vertical;"></textarea>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+                <a href="{{ url_for('views.index') }}" style="padding: 10px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; color: var(--text-secondary);">Annuler</a>
+                <button type="submit" style="padding: 10px 20px; border-radius: var(--radius-sm); background: var(--accent); color: white; font-size: 13px; font-weight: 600;">Créer l'espace</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
